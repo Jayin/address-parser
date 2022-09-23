@@ -1,0 +1,35 @@
+{
+    "name": "jayin/address-parser",
+    "description": "收货地址智能解析",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jayin",
+            "email": "tonjayin@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jayin\\AddressParser\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Jayin\\AddressParser\\Tests\\": "tests/"
+        }
+    },
+    "extra": {},
+    "scripts": {
+        "test": "phpunit --colors"
+    },
+    "scripts-descriptions": {
+        "test": "Run all tests."
+    }
+}
