@@ -1,4 +1,4 @@
-# PHP Package
+# Address Parser
 > 本项目参考了[pupuk/address](https://github.com/pupuk/address)
 
 收货地址智能解析
@@ -18,7 +18,19 @@ composer require jayin/address-parser -vvv
 ```php
 use Jayin\AddressParser\AddressParser;
 
-AddressParser::smart($v, true);
+AddressParser::smart('江西省抚州市东乡区孝岗镇恒安东路125号1栋3单元502室 13511112222 吴刚', true);
+```
+返回
+```json
+(
+    [mobile] => 13511112222
+    [name] => 吴刚
+    [addr] => 江西省抚州市东乡区孝岗镇恒安东路125号1栋3单元502室
+    [province] => 江西省
+    [city] => 抚州市
+    [region] => 东乡区
+    [street] => 孝岗镇恒安东路125号1栋3单元502室
+)
 ```
 
 
