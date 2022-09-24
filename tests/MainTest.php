@@ -3,14 +3,15 @@
  * Author: Jayin Taung <tonjayin@gmail.com>
  */
 
-namespace Jayin\AddressParser\Tests;
+namespace Tests;
 
 use Jayin\AddressParser\AddressParser;
 use PHPUnit\Framework\TestCase;
 
 class MainTest extends TestCase
 {
-    function test_address_parse(){
+    function test_address_parse()
+    {
         // 测试
         $test = array(
             '北京市东城区宵云路36号国航大厦一层',
@@ -40,7 +41,5 @@ class MainTest extends TestCase
             $this->assertArrayHasKey('province', $r);
             $this->assertArrayHasKey('city', $r);
         }
-
-
     }
 }

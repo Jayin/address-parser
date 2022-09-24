@@ -22,7 +22,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Jayin\\AddressParser\\Tests\\": "tests/"
+            "Tests\\": "tests/"
         }
     },
     "extra": {},
