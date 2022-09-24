@@ -7,8 +7,13 @@ namespace Jayin\AddressParser;
 
 class AddressParser
 {
-
-    static function smart($string, $user = true)
+    /**
+     * 解析
+     * @param string $string 地址
+     * @param bool $user 是否解析用户信息
+     * @return array
+     */
+    public static function smart($string, $user = true)
     {
         if ($user) {
             $decompose = self::decompose($string);
@@ -30,9 +35,11 @@ class AddressParser
         return $re;
     }
 
-    /*
-    ** 分离手机号(座机)，身份证号，姓名等用户信息
-    */
+    /**
+     * 分离手机号(座机)，身份证号，姓名等用户信息
+     * @param $string
+     * @return array
+     */
     public static function decompose($string)
     {
 
@@ -82,9 +89,11 @@ class AddressParser
         return $compose;
     }
 
-    /*
-    ** 根据统计规律分析出二三级地址
-    */
+    /**
+     *  根据统计规律分析出二三级地址
+     * @param $addr
+     * @return array
+     */
     public static function fuzz($addr)
     {
         $addr_origin = $addr;
@@ -150,7 +159,6 @@ class AddressParser
                     $street = mb_substr($addr_origin, $deep3_keyword_pos + 1);
                 }
             } else {
-
                 $a3 = '';
                 $street = $addr;
             }
@@ -183,9 +191,13 @@ class AddressParser
         return $r;
     }
 
-    /*
-    ** 智能解析出省市区+街道地址
-    */
+    /**
+     * 智能解析出省市区+街道地址
+     * @param $a1
+     * @param $a2
+     * @param $a3
+     * @return array
+     */
     public static function parse($a1, $a2, $a3)
     {
         $a3_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/a3.php';
@@ -195,7 +207,6 @@ class AddressParser
         $r = array();
 
         if ($a3 != '') {
-
             $area3_matches = array();
             foreach ($a3_data as $id => $v) {
                 if (mb_strpos($v['name'], $a3) !== false) {
@@ -223,7 +234,6 @@ class AddressParser
                         }
                     }
                 } else {
-
                     $r['province'] = '';
                     $r['city'] = '';
                     $r['region'] = $a3;
