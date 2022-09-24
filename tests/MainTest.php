@@ -42,4 +42,20 @@ class MainTest extends TestCase
             $this->assertArrayHasKey('city', $r);
         }
     }
+
+    function test_decompose()
+    {
+        $content = file_get_contents(__DIR__ . '/fixture/test_data.txt');
+        $lines = explode("\n", $content);
+
+        foreach ($lines as $v) {
+            $r = AddressParser::decompose($v, true);
+            $user = $r['name'] . ' ' . $r['mobile'] . ' ' . $r['idn'] . ' ';
+            $addr = ' ' . $r['addr'] . ' ' . ($r['postcode'] ?? '');
+            echo $user . $addr . PHP_EOL;
+            $this->assertArrayHasKey('name', $r);
+            $this->assertArrayHasKey('mobile', $r);
+            $this->assertArrayHasKey('idn', $r);
+        }
+    }
 }

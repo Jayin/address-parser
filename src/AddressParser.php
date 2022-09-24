@@ -29,7 +29,7 @@ class AddressParser
         $re['city'] = $parse['city'];
         $re['region'] = $parse['region'];
 
-        $re['street'] = ($fuzz['street']) ? $fuzz['street'] : '';
+        $re['street'] = ($fuzz['street']) ?: '';
         $re['street'] = str_replace([$re['region'], $re['city'], $re['province']], ['', '', ''], $re['street']);
 
         return $re;
@@ -42,35 +42,34 @@ class AddressParser
      */
     public static function decompose($string)
     {
-
         $compose = array();
-
+        // 过滤掉收货地址中的常用说明字符，排除干扰词
         $search = array('收货地址', '详细地址', '地址', '收货人', '收件人', '收货', '所在地区', '邮编', '电话', '手机号码', '身份证号码', '身份证号', '身份证', '：', ':', '；', ';', '，', ',', '。');
         $replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ');
         $string = str_replace($search, $replace, $string);
-
+        // 多个空白字符(包括空格\r\n\t)换成一个空格
         $string = preg_replace('/\s{1,}/', ' ', $string);
-
+        // 去除手机号码中的短横线 如0136-3333-6666 主要针对苹果手机
         $string = preg_replace('/0-|0?(\d{3})-(\d{4})-(\d{4})/', '$1$2$3', $string);
-
+        // 提取中国境内身份证号码
         preg_match('/\d{18}|\d{17}X/i', $string, $match);
         if ($match && $match[0]) {
             $compose['idn'] = strtoupper($match[0]);
             $string = str_replace($match[0], '', $string);
         }
-
+        // 提取11位手机号码或者7位以上座机号
         preg_match('/\d{7,11}|\d{3,4}-\d{6,8}/', $string, $match);
         if ($match && $match[0]) {
             $compose['mobile'] = $match[0];
             $string = str_replace($match[0], '', $string);
         }
-
+        // 提取6位邮编
         preg_match('/\d{6}/', $string, $match);
         if ($match && $match[0]) {
             $compose['postcode'] = $match[0];
             $string = str_replace($match[0], '', $string);
         }
-
+        // 按照空格切分 长度长的为地址 短的为姓名 因为不是基于自然语言分析，所以采取统计学上高概率的方案
         $string = trim(preg_replace('/ {2,}/', ' ', $string));
 
         $split_arr = explode(' ', $string);
@@ -90,7 +89,7 @@ class AddressParser
     }
 
     /**
-     *  根据统计规律分析出二三级地址
+     * 根据统计规律分析出二三级地址
      * @param $addr
      * @return array
      */
@@ -181,14 +180,12 @@ class AddressParser
             $a2 = '';
         }
 
-        $r = array(
+        return array(
             'a1' => $a1,
             'a2' => $a2,
             'a3' => $a3,
             'street' => $street,
         );
-
-        return $r;
     }
 
     /**
