@@ -23,7 +23,7 @@ class AddressParser
         }
 
         $fuzz = self::fuzz($re['addr']);
-        $parse = self::parse($fuzz['a1'], $fuzz['a2'], $fuzz['a3']);
+        $parse = self::parse($fuzz['province'], $fuzz['city'], $fuzz['region']);
 
         $re['province'] = $parse['province'];
         $re['city'] = $parse['city'];
@@ -103,16 +103,16 @@ class AddressParser
         $addr = str_replace('小区', '', $addr);
         $addr = str_replace('校区', '', $addr);
 
-        $a1 = '';
-        $a2 = '';
-        $a3 = '';
+        $province = '';
+        $city = '';
+        $region = '';
         $street = '';
 
         if (mb_strpos($addr, '县') !== false && mb_strpos($addr, '县') < floor((mb_strlen($addr) / 3) * 2) || (mb_strpos($addr, '区') !== false && mb_strpos($addr, '区') < floor((mb_strlen($addr) / 3) * 2)) || mb_strpos($addr, '旗') !== false && mb_strpos($addr, '旗') < floor((mb_strlen($addr) / 3) * 2)) {
 
             if (mb_strstr($addr, '旗')) {
                 $deep3_keyword_pos = mb_strpos($addr, '旗');
-                $a3 = mb_substr($addr, $deep3_keyword_pos - 1, 2);
+                $region = mb_substr($addr, $deep3_keyword_pos - 1, 2);
             }
             if (mb_strstr($addr, '区')) {
                 $deep3_keyword_pos = mb_strpos($addr, '区');
@@ -120,9 +120,9 @@ class AddressParser
                 if (mb_strstr($addr, '市')) {
                     $city_pos = mb_strpos($addr, '市');
                     $zone_pos = mb_strpos($addr, '区');
-                    $a3 = mb_substr($addr, $city_pos + 1, $zone_pos - $city_pos);
+                    $region = mb_substr($addr, $city_pos + 1, $zone_pos - $city_pos);
                 } else {
-                    $a3 = mb_substr($addr, $deep3_keyword_pos - 2, 3);
+                    $region = mb_substr($addr, $deep3_keyword_pos - 2, 3);
                 }
             }
             if (mb_strstr($addr, '县')) {
@@ -131,16 +131,16 @@ class AddressParser
                 if (mb_strstr($addr, '市')) {
                     $city_pos = mb_strpos($addr, '市');
                     $zone_pos = mb_strpos($addr, '县');
-                    $a3 = mb_substr($addr, $city_pos + 1, $zone_pos - $city_pos);
+                    $region = mb_substr($addr, $city_pos + 1, $zone_pos - $city_pos);
                 } else {
 
                     if (mb_strstr($addr, '自治县')) {
-                        $a3 = mb_substr($addr, $deep3_keyword_pos - 6, 7);
-                        if (in_array(mb_substr($a3, 0, 1), ['省', '市', '州'])) {
-                            $a3 = mb_substr($a3, 1);
+                        $region = mb_substr($addr, $deep3_keyword_pos - 6, 7);
+                        if (in_array(mb_substr($region, 0, 1), ['省', '市', '州'])) {
+                            $region = mb_substr($region, 1);
                         }
                     } else {
-                        $a3 = mb_substr($addr, $deep3_keyword_pos - 2, 3);
+                        $region = mb_substr($addr, $deep3_keyword_pos - 2, 3);
                     }
                 }
             }
@@ -150,40 +150,39 @@ class AddressParser
 
                 if (mb_substr_count($addr, '市') == 1) {
                     $deep3_keyword_pos = mb_strripos($addr, '市');
-                    $a3 = mb_substr($addr, $deep3_keyword_pos - 2, 3);
+                    $region = mb_substr($addr, $deep3_keyword_pos - 2, 3);
                     $street = mb_substr($addr_origin, $deep3_keyword_pos + 1);
                 } else if (mb_substr_count($addr, '市') >= 2) {
                     $deep3_keyword_pos = mb_strripos($addr, '市');
-                    $a3 = mb_substr($addr, $deep3_keyword_pos - 2, 3);
+                    $region = mb_substr($addr, $deep3_keyword_pos - 2, 3);
                     $street = mb_substr($addr_origin, $deep3_keyword_pos + 1);
                 }
             } else {
-                $a3 = '';
+                $region = '';
                 $street = $addr;
             }
         }
 
         if (mb_strpos($addr, '市') || mb_strstr($addr, '盟') || mb_strstr($addr, '州')) {
             if ($tmp_pos = mb_strpos($addr, '市')) {
-                $a2 = mb_substr($addr, $tmp_pos - 2, 3);
+                $city = mb_substr($addr, $tmp_pos - 2, 3);
             } else if ($tmp_pos = mb_strpos($addr, '盟')) {
-                $a2 = mb_substr($addr, $tmp_pos - 2, 3);
+                $city = mb_substr($addr, $tmp_pos - 2, 3);
             } else if ($tmp_pos = mb_strpos($addr, '州')) {
-
                 if ($tmp_pos = mb_strpos($addr, '自治州')) {
-                    $a2 = mb_substr($addr, $tmp_pos - 4, 5);
+                    $city = mb_substr($addr, $tmp_pos - 4, 5);
                 } else {
-                    $a2 = mb_substr($addr, $tmp_pos - 2, 3);
+                    $city = mb_substr($addr, $tmp_pos - 2, 3);
                 }
             }
         } else {
-            $a2 = '';
+            $city = '';
         }
 
         return array(
-            'a1' => $a1,
-            'a2' => $a2,
-            'a3' => $a3,
+            'province' => $province,
+            'city' => $city,
+            'region' => $region,
             'street' => $street,
         );
     }
@@ -197,9 +196,9 @@ class AddressParser
      */
     public static function parse($a1, $a2, $a3)
     {
-        $a3_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/a3.php';
-        $a2_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/a2.php';
-        $a1_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/a1.php';
+        $a3_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/region.php';
+        $a2_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/city.php';
+        $a1_data = require __DIR__ . DIRECTORY_SEPARATOR . 'data/province.php';
 
         $r = array();
 
@@ -213,6 +212,7 @@ class AddressParser
 
             if ($area3_matches && count($area3_matches) > 1) {
                 if ($a2) {
+                    $area2_matches = [];
                     foreach ($a2_data as $id => $v) {
                         if (mb_strpos($v['name'], $a2) !== false) {
                             $area2_matches[$id] = $v;
@@ -246,7 +246,7 @@ class AddressParser
                 $r['province'] = $province['name'];
                 $r['city'] = $city['name'];
             } else if (empty($area3_matches) && $a2 == $a3) {
-
+                $sheng_id = '';
                 foreach ($a2_data as $id => $v) {
                     if (mb_strpos($v['name'], $a2) !== false) {
                         $area2_matches[$id] = $v;
@@ -255,7 +255,7 @@ class AddressParser
                     }
                 }
 
-                $r['province'] = $a1_data[$sheng_id]['name'];
+                $r['province'] = $a1_data[$sheng_id]['name'] ?? '';
                 $r['region'] = '';
             }
         }

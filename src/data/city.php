@@ -283,7 +283,7 @@ return array(
 	'407' => array('name' => '六盘水市', 'pid' => 24, 'zipcode' => 553000),
 	'408' => array('name' => '遵义市', 'pid' => 24, 'zipcode' => 563100),
 	'409' => array('name' => '安顺市', 'pid' => 24, 'zipcode' => 561000),
-	'410' => array('name' => '铜仁地区', 'pid' => 24, 'zipcode' => 554300),
+	'410' => array('name' => '铜仁市', 'pid' => 24, 'zipcode' => 554300),
 	'411' => array('name' => '黔西南布依族苗族自治州', 'pid' => 24, 'zipcode' => 562400),
 	'412' => array('name' => '毕节地区', 'pid' => 24, 'zipcode' => 551700),
 	'413' => array('name' => '黔东南苗族侗族自治州', 'pid' => 24, 'zipcode' => 556000),

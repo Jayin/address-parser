@@ -10,6 +10,15 @@ use PHPUnit\Framework\TestCase;
 
 class MainTest extends TestCase
 {
+    private $test_address_list = [];
+
+    protected function setUp(): void
+    {
+        $content = file_get_contents(__DIR__ . '/fixture/test_data.txt');
+        $this->test_address_list = explode("\n", $content);
+    }
+
+
     function test_address_parse()
     {
         // 测试
@@ -33,6 +42,7 @@ class MainTest extends TestCase
             '江西省抚州市东乡区孝岗镇恒安东路125号1栋3单元502室 13511112222 吴刚',
             '清远市清城区石角镇美林湖大东路口佰仹公司 郑万顺 15345785872',
             '广东省广州市黄埔区思成路35号',
+            '贵州省铜仁地区21011119850925635X思南县朱朱路6237号朱朱小区5单元290室'
         );
 
         foreach ($test as $v) {
@@ -45,17 +55,37 @@ class MainTest extends TestCase
 
     function test_decompose()
     {
-        $content = file_get_contents(__DIR__ . '/fixture/test_data.txt');
-        $lines = explode("\n", $content);
-
-        foreach ($lines as $v) {
-            $r = AddressParser::decompose($v, true);
+        foreach ($this->test_address_list as $v) {
+            $r = AddressParser::decompose($v);
             $user = $r['name'] . ' ' . $r['mobile'] . ' ' . $r['idn'] . ' ';
-            $addr = ' ' . $r['addr'] . ' ' . ($r['postcode'] ?? '');
+            $addr = $r['addr'] . ' ' . ($r['postcode'] ?? '');
             echo $user . $addr . PHP_EOL;
             $this->assertArrayHasKey('name', $r);
             $this->assertArrayHasKey('mobile', $r);
             $this->assertArrayHasKey('idn', $r);
+        }
+    }
+
+    function test_fuzz()
+    {
+        foreach ($this->test_address_list as $v) {
+            $r = AddressParser::decompose($v);
+            $this->assertNotEmpty($r['addr']);
+            echo $r['addr'] . PHP_EOL;
+            $res = AddressParser::fuzz($r['addr']);
+            print_r($res);
+        }
+    }
+
+    function test_parse()
+    {
+        foreach ($this->test_address_list as $v) {
+            $r = AddressParser::decompose($v);
+            $this->assertNotEmpty($r['addr']);
+            $r1 = AddressParser::fuzz($r['addr']);
+            echo $r['addr'] . PHP_EOL;
+            $r2 = AddressParser::parse($r1['province'], $r1['city'], $r1['region']);
+            print_r($r2);
         }
     }
 }
